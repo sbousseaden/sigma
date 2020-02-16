@@ -1,0 +1,28 @@
+title: Discovery - Machines GPO Policies access by non computer account Fired
+description: This detection alert on abnormal access to Machines GPO shared folders by a non machine account, usualy it's a sign of discovery of domain GPOs manual or automatic
+author: Samir Bousseaden
+date: 2020/02/16
+references:
+    - https://twitter.com/SBousseaden/status/1228308968210141184
+tags:
+    - attack.discovery
+    - attack.t1135
+logsource:
+    product: windows
+    service: security
+    description: 'The advanced audit policy setting "Object Access > Audit Detailed File Share" must be configured for Success/Failure'
+detection:
+    selection1:
+        EventID: 5145
+        ShareName: \\*\SYSVOL
+        RelativeTargetName: '*\Policies\*\MACHINE\*'
+    selection2:
+        AccountName: '*$'
+    selection3:
+        SourceAddress: 
+          - '127.*'
+          - '::1'
+    condition: selection1 and not selection2 and not selection3
+falsepositives:
+    - low
+level: high
